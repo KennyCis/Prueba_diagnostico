@@ -4,43 +4,107 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Diagnostic Test</title>
+    <title>Rick & Morty Finder</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+    body {
+        background-color: #f4f4f4;
+        color: #333;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+    }
+
+    .title {
+        text-align: center;
+        margin-top: 40px;
+        font-weight: bold;
+        color: #2d8659;
+    }
+
+    .search-box {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        max-width: 450px;
+        margin: 30px auto;
+    }
+
+    .card {
+        background: #ffffff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        color: #333;
+        transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+    }
+
+    .btn-custom {
+        background-color: #2d8659;
+        color: #fff;
+        font-weight: bold;
+        transition: 0.3s;
+        border: none;
+    }
+
+    .btn-custom:hover {
+        background-color: #256d4a;
+    }
+</style>
+
 </head>
 
-<body class="p-4">
+<body>
 
-    <h1>WEB PROGRAMMING</h1>
-
-    <div class="mb-3">
-        <label for="characterId" class="form-label">Enter character ID:</label>
-        <input type="number" id="characterId" class="form-control" placeholder="Example: 1">
-        <button id="searchBtn" class="btn btn-success mt-2">Search Character</button>
+    <div class="text-end p-3">
+        <button onclick="logout()" class="btn btn-danger">Logout</button>
     </div>
 
-    <div class="d-flex gap-4 flex-wrap">
-        <!--card 1-->
-        <div class="card" style="width: 18rem;">
-            <img id="charImage1" src="OIP2.webp" class="card-img-top" alt="Character">
-            <div class="card-body">
-                <h5 id="charName1" class="card-title">Character Name</h5>
-                <p id="charStatus1" class="card-text">Status / Species</p>
+    <div class="container text-center">
+
+        <h1 class="title">Rick and Morty Character Finder</h1>
+
+        <div class="search-box">
+            <label for="characterId" class="form-label fw-semibold">Enter Character ID:</label>
+            <div class="input-group">
+                <input type="number" id="characterId" class="form-control" placeholder="Example: 1">
+                <button id="searchBtn" class="btn btn-custom">Search</button>
             </div>
         </div>
 
-        <!--card 2-->
-        <div class="card" style="width: 18rem;">
-            <img id="charImage2" src="OIP2.webp" class="card-img-top" alt="Character">
-            <div class="card-body">
-                <h5 id="charName2" class="card-title">Character Name</h5>
-                <p id="charStatus2" class="card-text">Status / Species</p>
+        <div class="d-flex justify-content-center gap-4 flex-wrap">
+            <!--card1-->
+            <div class="card" style="width: 18rem;">
+                <img id="charImage1" src="OIP2.webp" class="card-img-top" alt="Character">
+                <div class="card-body text-center">
+                    <h5 id="charName1" class="card-title">Character Name</h5>
+                    <p id="charStatus1" class="card-text text-secondary">Status / Species</p>
+                </div>
+            </div>
+
+            <!--card2-->
+            <div class="card" style="width: 18rem;">
+                <img id="charImage2" src="OIP2.webp" class="card-img-top" alt="Character">
+                <div class="card-body text-center">
+                    <h5 id="charName2" class="card-title">Character Name</h5>
+                    <p id="charStatus2" class="card-text text-secondary">Status / Species</p>
+                </div>
             </div>
         </div>
+
+        <button id="loadBtn" class="btn btn-custom mt-4 px-4 py-2 shadow">Load Two Characters</button>
     </div>
 
-    <button id="loadBtn" class="btn btn-primary mt-3">Load Two Characters</button>
+    <!--bootstrap-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        //button
         const button = document.getElementById("loadBtn");
 
         button.addEventListener("click", async () => {
@@ -48,12 +112,12 @@
                 const response = await fetch("http://127.0.0.1:8000/characters?limit=2");
                 const data = await response.json();
 
-                //card 1
+                //card1
                 document.getElementById("charImage1").src = data[0].image;
                 document.getElementById("charName1").textContent = data[0].name;
                 document.getElementById("charStatus1").textContent = `${data[0].status} - ${data[0].species}`;
 
-                //card 2
+                //card2
                 document.getElementById("charImage2").src = data[1].image;
                 document.getElementById("charName2").textContent = data[1].name;
                 document.getElementById("charStatus2").textContent = `${data[1].status} - ${data[1].species}`;
@@ -62,7 +126,37 @@
                 alert("Failed to load characters.");
             }
         });
+
+        document.getElementById("searchBtn").addEventListener("click", async () => {
+            const id = document.getElementById("characterId").value;
+            if (!id) return alert("Please enter a character ID.");
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/character/${id}`);
+                const data = await response.json();
+
+                document.getElementById("charImage1").src = data.image;
+                document.getElementById("charName1").textContent = data.name;
+                document.getElementById("charStatus1").textContent = `${data.status} - ${data.species}`;
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to fetch character.");
+            }
+        });
     </script>
+    <script>
+        //logged
+        if (localStorage.getItem("loggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+
+        //logout button
+        function logout() {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "login.html";
+        }
+    </script>
+
 </body>
 
 </html>
