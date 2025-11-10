@@ -34,8 +34,5 @@ def get_multiple_characters(limit: int = 5):
     result = requests.get(url)
     data = result.json()
     return data["results"][:limit]
-def get_character(id:int):
-    result = requests.get(f"{url}/{id}")
-    print (result) 
-    return result.json()
+
 
