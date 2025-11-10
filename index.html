@@ -18,43 +18,51 @@
         <button id="searchBtn" class="btn btn-success mt-2">Search Character</button>
     </div>
 
-    <div class="card" style="width: 18rem;">
-        <img id="charImage" src="OIP.webp" class="card-img-top" alt="Character">
-        <div class="card-body">
-            <h5 id="charName" class="card-title">Character Name</h5>
-            <p id="charStatus" class="card-text">Status / Species</p>
-            <a href="#" class="btn btn-primary">More Info</a>
+    <div class="d-flex gap-4 flex-wrap">
+        <!--card 1-->
+        <div class="card" style="width: 18rem;">
+            <img id="charImage1" src="OIP.webp" class="card-img-top" alt="Character">
+            <div class="card-body">
+                <h5 id="charName1" class="card-title">Character Name</h5>
+                <p id="charStatus1" class="card-text">Status / Species</p>
+            </div>
+        </div>
+
+        <!--card 2-->
+        <div class="card" style="width: 18rem;">
+            <img id="charImage2" src="OIP.webp" class="card-img-top" alt="Character">
+            <div class="card-body">
+                <h5 id="charName2" class="card-title">Character Name</h5>
+                <p id="charStatus2" class="card-text">Status / Species</p>
+            </div>
         </div>
     </div>
 
+    <button id="loadBtn" class="btn btn-primary mt-3">Load Two Characters</button>
+
     <script>
-        const button = document.getElementById("searchBtn");
+        const button = document.getElementById("loadBtn");
 
         button.addEventListener("click", async () => {
-            const id = document.getElementById("characterId").value;
-
-            if (!id) {
-                alert("Please enter a character ID.");
-                return;
-            }
-
             try {
-                const response = await fetch(`http://127.0.0.1:8000/character/${id}`);
+                const response = await fetch("http://127.0.0.1:8000/characters?limit=2");
                 const data = await response.json();
 
-                if (data.error) {
-                    alert(data.error);
-                    return;
-                }
+                //card 1
+                document.getElementById("charImage1").src = data[0].image;
+                document.getElementById("charName1").textContent = data[0].name;
+                document.getElementById("charStatus1").textContent = `${data[0].status} - ${data[0].species}`;
 
-                document.getElementById("charImage").src = data.image;
-                document.getElementById("charName").textContent = data.name;
-                document.getElementById("charStatus").textContent = `${data.status} - ${data.species}`;
+                //card 2
+                document.getElementById("charImage2").src = data[1].image;
+                document.getElementById("charName2").textContent = data[1].name;
+                document.getElementById("charStatus2").textContent = `${data[1].status} - ${data[1].species}`;
             } catch (error) {
-                console.error("Error fetching character:", error);
-                alert("Failed to connect to backend.");
+                console.error("Error:", error);
+                alert("Failed to load characters.");
             }
         });
     </script>
 </body>
+
 </html>
